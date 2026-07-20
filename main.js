@@ -49,14 +49,43 @@ async function handleSupabaseLogin() {
 }
 
 async function handleSupabaseLogout() {
-  await window.supabase_client.auth.signOut();
-  currentUser = null;
-  selectedOrgId = null;
-  selectionStep = 'org';
-  document.getElementById('login-overlay').classList.remove('hidden');
-  document.getElementById('selection-overlay').classList.add('hidden');
-  document.getElementById('login-email').value = '';
-  document.getElementById('login-password').value = '';
+  try {
+    console.log('🔴 Iniciando logout...');
+    console.log('supabase_client disponível?', !!window.supabase_client);
+    
+    if (!window.supabase_client) {
+      throw new Error('Supabase client não está inicializado');
+    }
+
+    const { error } = await window.supabase_client.auth.signOut();
+    
+    if (error) {
+      console.error('Erro no signOut:', error);
+      throw error;
+    }
+
+    console.log('✅ Logout bem-sucedido');
+    
+    currentUser = null;
+    selectedOrgId = null;
+    selectionStep = 'org';
+    
+    // Limpar elementos
+    const loginOverlay = document.getElementById('login-overlay');
+    const selectionOverlay = document.getElementById('selection-overlay');
+    const loginEmail = document.getElementById('login-email');
+    const loginPassword = document.getElementById('login-password');
+    
+    if (loginOverlay) loginOverlay.classList.remove('hidden');
+    if (selectionOverlay) selectionOverlay.classList.add('hidden');
+    if (loginEmail) loginEmail.value = '';
+    if (loginPassword) loginPassword.value = '';
+    
+    console.log('✅ UI resetada');
+  } catch (err) {
+    console.error('❌ Erro ao fazer logout:', err);
+    alert('Erro ao sair: ' + err.message);
+  }
 }
 
 function showAuthError(message) {
