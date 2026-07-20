@@ -12,6 +12,9 @@ window.APP_PASSWORD = import.meta.env.VITE_APP_PASSWORD || 'proxima2026';
 // Inicializar Supabase
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// Expor globalmente para funções inline do HTML
+window.supabase_client = supabase;
+
 // STATE
 let currentUser = null;
 let organizations = [];
@@ -33,7 +36,7 @@ async function handleSupabaseLogin() {
   }
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await window.supabase_client.auth.signInWithPassword({ email, password });
     if (error) throw error;
 
     currentUser = data.user;
@@ -46,7 +49,7 @@ async function handleSupabaseLogin() {
 }
 
 async function handleSupabaseLogout() {
-  await supabase.auth.signOut();
+  await window.supabase_client.auth.signOut();
   currentUser = null;
   selectedOrgId = null;
   selectionStep = 'org';
@@ -71,7 +74,7 @@ function showAuthError(message) {
 async function loadOrganizations() {
   try {
     // 1. Pega as organizações que o usuário tem acesso
-    const { data: memberData, error: memberError } = await supabase
+    const { data: memberData, error: memberError } = await window.supabase_client
       .from('organization_members')
       .select('organization_id')
       .eq('user_id', currentUser.id);
@@ -86,7 +89,7 @@ async function loadOrganizations() {
     }
 
     // 2. Pega os dados das organizações
-    const { data: orgs, error: orgError } = await supabase
+    const { data: orgs, error: orgError } = await window.supabase_client
       .from('organizations')
       .select('*')
       .in('id', orgIds);
@@ -96,7 +99,7 @@ async function loadOrganizations() {
     organizations = orgs || [];
 
     // 3. Pega os projetos dessas organizações
-    const { data: prj, error: projError } = await supabase
+    const { data: prj, error: projError } = await window.supabase_client
       .from('projects')
       .select('*')
       .in('organization_id', orgIds);
