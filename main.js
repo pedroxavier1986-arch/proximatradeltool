@@ -70,22 +70,42 @@ function showAuthError(message) {
 
 async function loadOrganizations() {
   try {
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
+    // 1. Pega as organizações que o usuário tem acesso
+    const { data: memberData, error: memberError } = await supabase
+      .from('organization_members')
+      .select('organization_id')
       .eq('user_id', currentUser.id);
 
-    if (error) throw error;
+    if (memberError) throw memberError;
 
-    projects = data || [];
-    organizations = [...new Set(projects.map(p => p.organization))].filter(Boolean);
+    const orgIds = memberData.map(m => m.organization_id);
     
-    if (organizations.length === 0) {
-      // Se não há organizações, cria a primeira
+    if (orgIds.length === 0) {
       showCreateOrgModal();
-    } else {
-      showSelectionModal();
+      return;
     }
+
+    // 2. Pega os dados das organizações
+    const { data: orgs, error: orgError } = await supabase
+      .from('organizations')
+      .select('*')
+      .in('id', orgIds);
+
+    if (orgError) throw orgError;
+
+    organizations = orgs || [];
+
+    // 3. Pega os projetos dessas organizações
+    const { data: prj, error: projError } = await supabase
+      .from('projects')
+      .select('*')
+      .in('organization_id', orgIds);
+
+    if (projError) throw projError;
+
+    projects = prj || [];
+
+    showSelectionModal();
   } catch (err) {
     showAuthError('Erro ao carregar organizações: ' + err.message);
   }
@@ -102,12 +122,12 @@ function showSelectionModal() {
     title.textContent = 'Selecione a Empresa';
     list.innerHTML = organizations.map(org => `
       <label class="selection-item">
-        <input type="radio" name="selection" value="${org}" onchange="selectOrg('${org}')">
-        ${org}
+        <input type="radio" name="selection" value="${org.id}" onchange="selectOrg('${org.id}', '${org.name}')">
+        ${org.name}
       </label>
     `).join('');
   } else {
-    const orgProjects = projects.filter(p => p.organization === selectedOrgId);
+    const orgProjects = projects.filter(p => p.organization_id === selectedOrgId);
     title.textContent = 'Selecione o Projeto';
     list.innerHTML = orgProjects.map(p => `
       <label class="selection-item">
@@ -118,8 +138,8 @@ function showSelectionModal() {
   }
 }
 
-function selectOrg(org) {
-  selectedOrgId = org;
+function selectOrg(orgId, orgName) {
+  selectedOrgId = orgId;
   selectionStep = 'project';
   showSelectionModal();
 }
