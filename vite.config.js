@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   server: {
-    middlewareMode: true,
+    open: true,
   },
   build: {
     target: 'esnext',
@@ -10,6 +10,12 @@ export default defineConfig({
     sourcemap: false,
     outDir: 'dist',
     emptyOutDir: true,
+    rollupOptions: {
+      input: 'index.html',
+      output: {
+        entryFileNames: '[name].js',
+      },
+    },
   },
   define: {
     'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL),
