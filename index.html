@@ -1881,17 +1881,7 @@ document.getElementById('btn-toggle-sidebar').addEventListener('click', function
   document.getElementById('main').classList.toggle('collapsed');
 });
 
-/* Logout button */
-document.getElementById('btn-logout').addEventListener('click', async function() {
-  if (confirm('Tem certeza que deseja sair?')) {
-    try {
-      await supabase.auth.signOut();
-      window.location.reload();
-    } catch (err) {
-      alert('Erro ao sair: ' + err.message);
-    }
-  }
-});
+
 
 /* Nav items */
 document.getElementById('nav-overview').addEventListener('click',  function(){ goTo('overview'); });
