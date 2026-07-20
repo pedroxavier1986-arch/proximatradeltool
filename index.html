@@ -1060,7 +1060,7 @@ td input[type=text]:focus{outline:2px solid #3b82f6;border-color:transparent;}
 (function(){
 
 /* ── AUTH ──────────────────────────────────────────── */
-var APP_PASSWORD = import.meta?.env?.VITE_APP_PASSWORD || 'proxima2026';
+var APP_PASSWORD = import.meta.env.VITE_APP_PASSWORD || 'proxima2026';
 var AUTH_KEY = 'tradetool_auth';
 
 function checkAuth(){
@@ -1914,16 +1914,13 @@ renderOverview();
 
 </script>
 </body>
-</html>
-
-
 <!-- ==========================================
      SUPABASE INTEGRATION SCRIPT
      ========================================== -->
 <script>
-// SUPABASE CONFIG - Lê de .env.local (desenvolvimento) ou variáveis Vercel (produção)
-const SUPABASE_URL = import.meta?.env?.VITE_SUPABASE_URL || 'https://snintnntzvgantlcbmhy.supabase.co';
-const SUPABASE_KEY = import.meta?.env?.VITE_SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNuaW50bm50enZnYW50bGNibWh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1MjM1NTgsImV4cCI6MjEwMDA5OTU1OH0.3Pg1BFi814f6bL93hXIEUOINoFl4XgCEhp6DbZjxzZs';
+// SUPABASE CONFIG
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://snintnntzvgantlcbmhy.supabase.co';
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNuaW50bm50enZnYW50bGNibWh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1MjM1NTgsImV4cCI6MjEwMDA5OTU1OH0.3Pg1BFi814f6bL93hXIEUOINoFl4XgCEhp6DbZjxzZs';
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
